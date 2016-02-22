@@ -1,9 +1,6 @@
 import os, time, math
 import plotly.plotly as py
 import plotly.graph_objs as go
-
-
-
 from os.path import join, basename, exists, isdir
 
 INPUT_FILE_DIR = "input/"
@@ -45,12 +42,48 @@ def readguardsfile():
 			polygonVertices.append(vertices)
 
 		return polygonVertices
-		#guardsPolygonVertices.append(polygonVertices)
-		#print s
-		#print polygons[1] 
 
-guardsPolygonVertices =  readguardsfile()
-a =  guardsPolygonVertices[29]
+def readcheckfile():
+	inputFileName = "check"
+	infilename = os.path.join(INPUT_FILE_DIR, inputFileName + '.pol')
+	outfilename = os.path.join(INPUT_FILE_DIR, inputFileName + '.sol')
+	with open(infilename, 'r') as f:
+		polygons = []
+		for i in range(0,20):
+			line = f.readline()
+			line = line.rstrip()
+			while not line.startswith(':'):
+				line = line.lstrip("0123456789");
+			line = line.lstrip(': ')
+			polygons.append(line)
+		polygonVertices = []
+		guardCoordinates = []
+		for polygon in polygons:
+			s = polygon
+			vertices = []
+			guards = []
+			tempStr = ''
+			inTuple = False
+			j = 0
+			while j < len(s): #polygon vertices
+				if s[j] == '(':
+					inTuple = True
+					tempStr += s[j]
+				elif s[j] == ')':
+					tempStr += s[j]
+					vertices.append(tempStr)
+					inTuple = False
+					tempStr = ''
+				elif inTuple:
+					tempStr += s[j]
+				elif s[j] == ';':
+					break
+				j += 1
+			while j < len(s): #guard coordinates
+				
+			polygonVertices.append(vertices)
+
+		return polygonVertices
 
 def getXYlists(singlePolygon): #takes in one list of vertices for a selected polygon
 	listLength = len(singlePolygon)
@@ -67,17 +100,22 @@ def getXYlists(singlePolygon): #takes in one list of vertices for a selected pol
 		Ylist.append(y)
 	return Xlist, Ylist
 
-aXlist, aYlist = getXYlists(a)
+def plot(singlePolygon):
+	aXlist, aYlist = getXYlists(a)
+	trace1 = go.Scatter(
+	    x=aXlist,
+	    y=aYlist,
+	    fill='tozeroy'
+	)
 
-trace1 = go.Scatter(
-    x=aXlist,
-    y=aYlist,
-    fill='tozeroy'
-)
-
-data = [trace1]
-plot_url = py.plot(data, filename='Area')
+	data = [trace1]
+	plot_url = py.plot(data, filename='Area2')
 
 
+#guardsPolygonVertices =  readguardsfile()
+#a =  guardsPolygonVertices[29]
+#print a
 
-print aXlist
+checkPolygonVertices = readcheckfile()
+b = checkPolygonVertices[2]
+print b
