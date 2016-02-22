@@ -47,4 +47,22 @@ def readguardsfile():
 		#print polygons[1] 
 
 guardsPolygonVertices =  readguardsfile()
-print guardsPolygonVertices[2]
+a =  guardsPolygonVertices[2]
+
+def getXYlists(singlePolygon): #takes in one list of vertices for a selected polygon
+	listLength = len(singlePolygon)
+	Xlist = []
+	Ylist = []
+	for vertice in singlePolygon:
+		coordinates = vertice.strip('()')
+		coordinates = coordinates.split(',')
+		x = coordinates[0]
+		x = float(x)
+		y = coordinates[1]
+		y = float(y)
+		Xlist.append(x)
+		Ylist.append(y)
+	return Xlist, Ylist
+
+aXlist, aYlist = getXYlists(a)
+print aXlist
