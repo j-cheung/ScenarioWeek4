@@ -153,12 +153,12 @@ def triangulate(singlePolygon):
 
 def plot(singlePolygon,guard):
 	from plotly.graph_objs import Scatter, Layout
-	aXlist, aYlist = get_polygon_XYlists(singlePolygon)
-	bXlist, bYlist = get_guards_XYlists(guard)
+	polXlist, polYlist = get_polygon_XYlists(singlePolygon)
+	guardXlist, guardYlist = get_guards_XYlists(guard)
 	plotly.offline.plot({
 	"data": [
-    Scatter(x=aXlist, y=aYlist, fill='tozeroy'),
-    Scatter(x=bXlist, y=bYlist, mode = 'markers')
+    Scatter(x=polXlist, y=polYlist, fill='tozeroy'),
+    Scatter(x=guardXlist, y=guardYlist, mode = 'markers')
 	]
 	})
 
@@ -171,6 +171,3 @@ checkPolygonVertices, checkGuardCoordinates = readcheckfile()
 a = checkPolygonVertices[2]
 b = checkGuardCoordinates[2]
 plot(a,b)
-
-print get_polygon_XYlists(b)
-print get_guards_XYlists(c)
