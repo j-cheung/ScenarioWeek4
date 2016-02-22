@@ -172,7 +172,7 @@ def plotcheck(singlePolygon,guard):
 
 
 guardsPolygonVertices =  readguardsfile()
-a =  guardsPolygonVertices[1]
+a =  guardsPolygonVertices[8]
 plotguard(a)
 
 #checkPolygonVertices, checkGuardCoordinates = readcheckfile()
@@ -197,8 +197,6 @@ def output_part1(guardsSolution):
 			f.write(str(polygon))
 			f.write('\n')
 			count += 1
-		#f.write('1:\t(1.5, 0.5)\n')
 
-print guardsSolution
-output_part1(guardsSolution)
+#output_part1(guardsSolution)
 
