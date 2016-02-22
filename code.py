@@ -174,7 +174,9 @@ def plotcheck(singlePolygon,guard):
 
 guardsPolygonVertices =  readguardsfile()
 a =  guardsPolygonVertices[0]
-plotguard(a)
+#plotguard(a)
+print (a)
+
 
 #checkPolygonVertices, checkGuardCoordinates = readcheckfile()
 #a = checkPolygonVertices[2]
