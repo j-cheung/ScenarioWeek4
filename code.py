@@ -19,7 +19,6 @@ OUTPUT_FILE_DIR = "output/"
 def readguardsfile():
 	inputFileName = "guards"
 	infilename = os.path.join(INPUT_FILE_DIR, inputFileName + '.pol')
-	outfilename = os.path.join(INPUT_FILE_DIR, inputFileName + '.sol')
 	with open(infilename, 'r') as f:
 		polygons = []
 		for i in range(0,30):
@@ -173,10 +172,31 @@ def plotcheck(singlePolygon,guard):
 
 
 guardsPolygonVertices =  readguardsfile()
-a =  guardsPolygonVertices[0]
+a =  guardsPolygonVertices[1]
 plotguard(a)
 
 #checkPolygonVertices, checkGuardCoordinates = readcheckfile()
 #a = checkPolygonVertices[2]
 #b = checkGuardCoordinates[2]
 #plotcheck(a,b)
+
+guardsSolution = []
+guardsSolution.append((1.5, 0.5))
+guardsSolution.append((1.75, 0.25))
+
+def output_part1(guardsSolution):
+	inputFileName = "guards"
+	outfilename = os.path.join(OUTPUT_FILE_DIR, inputFileName + '.sol')
+	with open(outfilename, 'w') as f:
+		f.write('uakari\n')
+		f.write('g3en4qh6rk9s518noj535r75p9\n')
+		count = 1
+		for polygon in guardsSolution:
+			f.write(count)
+			f.write(':\t')
+			f.write(polygon + '\n')
+			count += 1
+		#f.write('1:\t(1.5, 0.5)\n')
+
+output_part1()
+
