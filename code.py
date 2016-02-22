@@ -2,6 +2,14 @@ import os, time, math
 import plotly.plotly as py
 import plotly.graph_objs as go
 from os.path import join, basename, exists, isdir
+#Imports for Triangulate, (you will need to download numpy, scipy, and matplotlib)
+"""
+import numpy as np
+import scipy as sp
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+from scipy.spatial import Delaunay
+"""
 
 INPUT_FILE_DIR = "input/"
 OUTPUT_FILE_DIR = "output/"
@@ -146,6 +154,11 @@ def plot(singlePolygon):
 
 	data = [trace1]
 	plot_url = py.plot(data, filename='Area2')
+
+def triangulate(singlePolygon):
+	points = np.array(singlePolygon)
+	tri = Delaunay(points)
+	return tri
 
 
 #guardsPolygonVertices =  readguardsfile()
