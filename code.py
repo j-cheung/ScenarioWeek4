@@ -1,4 +1,5 @@
 import os, time, math
+import plotly
 import plotly.plotly as py
 import plotly.graph_objs as go
 from os.path import join, basename, exists, isdir
@@ -144,30 +145,32 @@ def get_guards_XYlists(singlePolygon): #takes in one list of vertices for a sele
 		Ylist.append(y)
 	return Xlist, Ylist
 
-def plot(singlePolygon):
-	aXlist, aYlist = getXYlists(singlePolygon)
-	trace1 = go.Scatter(
-	    x=aXlist,
-	    y=aYlist,
-	    fill='tozeroy'
-	)
-
-	data = [trace1]
-	plot_url = py.plot(data, filename='Area2')
-
 def triangulate(singlePolygon):
 	points = np.array(singlePolygon)
 	tri = Delaunay(points)
 	return tri
 
 
+def plot(singlePolygon,guard):
+	from plotly.graph_objs import Scatter, Layout
+	aXlist, aYlist = get_polygon_XYlists(singlePolygon)
+	bXlist, bYlist = get_guards_XYlists(guard)
+	plotly.offline.plot({
+	"data": [
+    Scatter(x=aXlist, y=aYlist, fill='tozeroy'),
+    Scatter(x=bXlist, y=bYlist, mode = 'markers')
+	]
+	})
+
+
 #guardsPolygonVertices =  readguardsfile()
-#a =  guardsPolygonVertices[29]
-#print a
+#a =  guardsPolygonVertices[7]
+#plot(a)
 
 checkPolygonVertices, checkGuardCoordinates = readcheckfile()
-b = checkPolygonVertices[2]
-c = checkGuardCoordinates[2]
+a = checkPolygonVertices[2]
+b = checkGuardCoordinates[2]
+plot(a,b)
 
 print get_polygon_XYlists(b)
 print get_guards_XYlists(c)
