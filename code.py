@@ -5,15 +5,13 @@ from os.path import join, basename, exists, isdir
 INPUT_FILE_DIR = "input/"
 OUTPUT_FILE_DIR = "output/"
 
-guardsPolygonVertices = []
-
 def readguardsfile():
 	inputFileName = "guards"
 	infilename = os.path.join(INPUT_FILE_DIR, inputFileName + '.pol')
 	outfilename = os.path.join(INPUT_FILE_DIR, inputFileName + '.sol')
 	with open(infilename, 'r') as f:
 		polygons = []
-		for i in range(0,29):
+		for i in range(0,30):
 			line = f.readline()
 			line = line.rstrip()
 			while not line.startswith(':'):
@@ -47,7 +45,7 @@ def readguardsfile():
 		#print polygons[1] 
 
 guardsPolygonVertices =  readguardsfile()
-a =  guardsPolygonVertices[2]
+a =  guardsPolygonVertices[29]
 
 def getXYlists(singlePolygon): #takes in one list of vertices for a selected polygon
 	listLength = len(singlePolygon)
