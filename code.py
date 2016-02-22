@@ -150,8 +150,17 @@ def triangulate(singlePolygon):
 	tri = Delaunay(points)
 	return tri
 
+def plotguard(singlePolygon):
+	from plotly.graph_objs import Scatter, Layout
+	polXlist, polYlist = get_polygon_XYlists(singlePolygon)
+	plotly.offline.plot({
+	"data": [
+    Scatter(x=polXlist, y=polYlist, fill='tozeroy'),
+    ]
+	})
 
-def plot(singlePolygon,guard):
+
+def plotcheck(singlePolygon,guard):
 	from plotly.graph_objs import Scatter, Layout
 	polXlist, polYlist = get_polygon_XYlists(singlePolygon)
 	guardXlist, guardYlist = get_guards_XYlists(guard)
@@ -163,11 +172,11 @@ def plot(singlePolygon,guard):
 	})
 
 
-#guardsPolygonVertices =  readguardsfile()
-#a =  guardsPolygonVertices[7]
-#plot(a)
+guardsPolygonVertices =  readguardsfile()
+a =  guardsPolygonVertices[0]
+plotguard(a)
 
-checkPolygonVertices, checkGuardCoordinates = readcheckfile()
-a = checkPolygonVertices[2]
-b = checkGuardCoordinates[2]
-plot(a,b)
+#checkPolygonVertices, checkGuardCoordinates = readcheckfile()
+#a = checkPolygonVertices[2]
+#b = checkGuardCoordinates[2]
+#plotcheck(a,b)
