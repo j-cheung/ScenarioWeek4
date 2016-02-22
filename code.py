@@ -17,28 +17,29 @@ def readfile():
 			while not line.startswith(':'):
 				line = line.lstrip("0123456789");
 			line = line.lstrip(': ')
-
 			polygons.append(line)
-		
-		s = polygons[0]
-		print s
-		vertices = []
-		tempStr = ''
-		inTuple = False
-		j = 0
-		while j < len(s):
-			if s[j] == '(':
-				inTuple = True
-				tempStr += s[j]
-			elif s[j] == ')':
-				tempStr += s[j]
-				vertices.append(tempStr)
-				inTuple = False
-				tempStr = ''
-			elif inTuple:
-				tempStr += s[j]
-			j += 1
-		print vertices
+		polygonVertices = []
+		for polygon in polygons:
+			s = polygon
+			vertices = []
+			tempStr = ''
+			inTuple = False
+			j = 0
+			while j < len(s):
+				if s[j] == '(':
+					inTuple = True
+					tempStr += s[j]
+				elif s[j] == ')':
+					tempStr += s[j]
+					vertices.append(tempStr)
+					inTuple = False
+					tempStr = ''
+				elif inTuple:
+					tempStr += s[j]
+				j += 1
+			polygonVertices.append(vertices)
+
+		print polygonVertices[2]
 		#print s
 		#print polygons[1] 
 
