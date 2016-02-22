@@ -79,13 +79,49 @@ def readcheckfile():
 				elif s[j] == ';':
 					break
 				j += 1
+			inTuple = False
 			while j < len(s): #guard coordinates
-				
+				if s[j] == '(':
+					inTuple = True
+					tempStr += s[j]
+				elif s[j] == ')':
+					tempStr += s[j]
+					guards.append(tempStr)
+					inTuple = False
+					tempStr = ''
+				elif inTuple:
+					tempStr += s[j]
+				j += 1
 			polygonVertices.append(vertices)
+			guardCoordinates.append(guards)
 
-		return polygonVertices
+		return polygonVertices, guardCoordinates
 
-def getXYlists(singlePolygon): #takes in one list of vertices for a selected polygon
+def get_polygon_XYlists(singlePolygon): #takes in one list of vertices for a selected polygon
+	listLength = len(singlePolygon)
+	Xlist = []
+	Ylist = []
+	for vertice in singlePolygon:
+		coordinates = vertice.strip('()')
+		coordinates = coordinates.split(',')
+		x = coordinates[0]
+		x = float(x)
+		y = coordinates[1]
+		y = float(y)
+		Xlist.append(x)
+		Ylist.append(y)
+	firstVertice = singlePolygon[0]
+	coordinates = firstVertice.strip('()')
+	coordinates = coordinates.split(',')
+	x = coordinates[0]
+	x = float(x)
+	y = coordinates[1]
+	y = float(y)
+	Xlist.append(x)
+	Ylist.append(y)
+	return Xlist, Ylist
+
+def get_guards_XYlists(singlePolygon): #takes in one list of vertices for a selected polygon
 	listLength = len(singlePolygon)
 	Xlist = []
 	Ylist = []
@@ -101,7 +137,7 @@ def getXYlists(singlePolygon): #takes in one list of vertices for a selected pol
 	return Xlist, Ylist
 
 def plot(singlePolygon):
-	aXlist, aYlist = getXYlists(a)
+	aXlist, aYlist = getXYlists(singlePolygon)
 	trace1 = go.Scatter(
 	    x=aXlist,
 	    y=aYlist,
@@ -116,6 +152,9 @@ def plot(singlePolygon):
 #a =  guardsPolygonVertices[29]
 #print a
 
-checkPolygonVertices = readcheckfile()
+checkPolygonVertices, checkGuardCoordinates = readcheckfile()
 b = checkPolygonVertices[2]
-print b
+c = checkGuardCoordinates[2]
+
+print get_polygon_XYlists(b)
+print get_guards_XYlists(c)
