@@ -182,7 +182,7 @@ plotguard(a)
 
 guardsSolution = []
 guardsSolution.append((1.5, 0.5))
-guardsSolution.append((1.75, 0.25))
+guardsSolution.append((2, 0))
 
 def output_part1(guardsSolution):
 	inputFileName = "guards"
@@ -192,11 +192,13 @@ def output_part1(guardsSolution):
 		f.write('g3en4qh6rk9s518noj535r75p9\n')
 		count = 1
 		for polygon in guardsSolution:
-			f.write(count)
+			f.write(str(count))
 			f.write(':\t')
-			f.write(polygon + '\n')
+			f.write(str(polygon))
+			f.write('\n')
 			count += 1
 		#f.write('1:\t(1.5, 0.5)\n')
 
-output_part1()
+print guardsSolution
+output_part1(guardsSolution)
 
