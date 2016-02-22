@@ -5,7 +5,9 @@ from os.path import join, basename, exists, isdir
 INPUT_FILE_DIR = "input/"
 OUTPUT_FILE_DIR = "output/"
 
-def readfile():
+guardsPolygonVertices = []
+
+def readguardsfile():
 	inputFileName = "guards"
 	infilename = os.path.join(INPUT_FILE_DIR, inputFileName + '.pol')
 	outfilename = os.path.join(INPUT_FILE_DIR, inputFileName + '.sol')
@@ -39,8 +41,10 @@ def readfile():
 				j += 1
 			polygonVertices.append(vertices)
 
-		print polygonVertices[2]
+		return polygonVertices
+		#guardsPolygonVertices.append(polygonVertices)
 		#print s
 		#print polygons[1] 
 
-readfile()
+guardsPolygonVertices =  readguardsfile()
+print guardsPolygonVertices[2]
