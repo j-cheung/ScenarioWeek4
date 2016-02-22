@@ -1,9 +1,14 @@
 import os, time, math
+import plotly.plotly as py
+import plotly.graph_objs as go
+
+
 
 from os.path import join, basename, exists, isdir
 
 INPUT_FILE_DIR = "input/"
 OUTPUT_FILE_DIR = "output/"
+
 
 def readguardsfile():
 	inputFileName = "guards"
@@ -63,4 +68,16 @@ def getXYlists(singlePolygon): #takes in one list of vertices for a selected pol
 	return Xlist, Ylist
 
 aXlist, aYlist = getXYlists(a)
+
+trace1 = go.Scatter(
+    x=aXlist,
+    y=aYlist,
+    fill='tozeroy'
+)
+
+data = [trace1]
+plot_url = py.plot(data, filename='Area')
+
+
+
 print aXlist
