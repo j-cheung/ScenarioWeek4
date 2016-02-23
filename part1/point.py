@@ -1,5 +1,8 @@
+from decimal import *
 
 class Point(tuple):
+
+	getcontext().prec = 16
 
 	def __new__(cls, num, x, y):
 		return tuple.__new__(cls,(float(num), float(x), float(y)))

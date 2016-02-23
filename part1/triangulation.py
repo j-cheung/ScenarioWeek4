@@ -1,11 +1,12 @@
 from point import Point
 from triangle import Triangle
 from side import Side
+from decimal import *
 
 class Triangulation(object):
 
 	# Used to verify if triangulation is counter clockwise
-	EPSILON = 0.0000000001
+	EPSILON = 0.00000000001
 
 	def __init__(self, points):
 		if not isinstance(points, list):

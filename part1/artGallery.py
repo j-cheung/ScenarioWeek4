@@ -1,8 +1,11 @@
 import os, time, math
+"""
 import plotly
 import plotly.plotly as py
 import plotly.graph_objs as go
+"""
 from os.path import join, basename, exists, isdir
+from decimal import *
 
 from point import Point
 from triangulation import Triangulation
@@ -74,10 +77,11 @@ class ArtGallery(object):
 			pt2 = pt.strip('()')
 			pt3 = pt2.replace(",", "")
 			x, y = pt3.split()
+			getcontext().prec = 16
 			point = Point(i, float(x), float(y))
 			i += 1
 			points.append(point)
-		print points
+		#print points
 		return points
 
 
@@ -125,16 +129,43 @@ class ArtGallery(object):
 			# version control due to refresh of the painter object
 			self.Version += 1
 
+def output_part1(guardsSolution):
+	inputFileName = "guards"
+	outfilename = os.path.join(OUTPUT_FILE_DIR, inputFileName + '.sol')
+	with open(outfilename, 'w') as f:
+		f.write('uakari\n')
+		f.write('g3en4qh6rk9s518noj535r75p9\n')
+		count = 1
+		for polygon in guardsSolution:
+			f.write(str(count))
+			f.write(':\t')
+			thatsolution = str(polygon)
+			thatsolution = thatsolution.strip('[]')
+			thatsolution = thatsolution.strip('\'')
+			f.write(thatsolution)
+			f.write('\n')
+			count += 1
 
 if __name__ == '__main__':
-		#tmp = ArtGallery.load("input/guards.pol")        
-		tmp = ArtGallery.polyToPoint(3)
-		g = ArtGallery(tmp.pop(0))
-		for p in tmp:
-			g.include(p)
-		
-		for p in g.get_points():
-			if g.is_guard(p):
-				print p, " GUARD!"
-			else:
-				print p
+		#tmp = ArtGallery.load("input/guards.pol")
+		solution = []        
+		for count in range(0,30):
+			tmp = ArtGallery.polyToPoint(count)
+			g = ArtGallery(tmp.pop(0))
+			for p in tmp:
+				g.include(p)
+			onesolution = []
+			i=0
+			for p in g.get_points():
+				if g.is_guard(p):
+					#print p, " GUARD!"
+					onesolution.append((ArtGallery.readguardsfile(count))[i])
+				i += 1
+				#else:
+					#print p
+			#print count
+			print str(count) + " " + str(len(onesolution))
+			solution.append(onesolution)
+		print solution
+		output_part1(solution)
+
