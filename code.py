@@ -170,19 +170,23 @@ def plotcheck(singlePolygon,guard):
 	]
 	})
 
-
+"""
 guardsPolygonVertices =  readguardsfile()
 a =  guardsPolygonVertices[8]
 plotguard(a)
+"""
+checkPolygonVertices, checkGuardCoordinates = readcheckfile()
+a = checkPolygonVertices[3]
+b = checkGuardCoordinates[3]
+print a
+print b
+plotcheck(a,b)
 
-#checkPolygonVertices, checkGuardCoordinates = readcheckfile()
-#a = checkPolygonVertices[2]
-#b = checkGuardCoordinates[2]
-#plotcheck(a,b)
-
+"""
 guardsSolution = []
 guardsSolution.append((1.5, 0.5))
 guardsSolution.append((2, 0))
+"""
 
 def output_part1(guardsSolution):
 	inputFileName = "guards"
