@@ -4,13 +4,12 @@ import plotly.plotly as py
 import plotly.graph_objs as go
 from os.path import join, basename, exists, isdir
 #Imports for Triangulate, (you will need to download numpy, scipy, and matplotlib)
-"""
 import numpy as np
 import scipy as sp
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from scipy.spatial import Delaunay
-"""
+
 
 INPUT_FILE_DIR = "input/"
 OUTPUT_FILE_DIR = "output/"
@@ -144,32 +143,44 @@ def get_guards_XYlists(singlePolygon): #takes in one list of vertices for a sele
 		Ylist.append(y)
 	return Xlist, Ylist
 
+def get_triangulate_list(singlePolygon): #takes in one list of vertices for a selected polygon
+	triangulateList = []
+	for vertice in singlePolygon:
+		vertex = []
+		coordinates = vertice.strip('()')
+		coordinates = coordinates.split(',')
+		x = coordinates[0]
+		x = float(x)
+		y = coordinates[1]
+		y = float(y)
+		vertex.append(x)
+		vertex.append(y)
+		triangulateList.append(vertex)
+	return triangulateList
+
 def triangulate(singlePolygon):
-	points = np.array(singlePolygon)
+	tlist = get_triangulate_list(singlePolygon)
+	points = np.array(tlist)
 	tri = Delaunay(points)
+	import matplotlib.pyplot as plt
+	plt.triplot(points[:,0], points[:,1], tri.simplices.copy())
+	plt.plot(points[:,0], points[:,1], 'o')
+	plt.show()
 	return tri
 
-def plotguard(singlePolygon):
+
+def plot(singlePolygon,guard):
 	from plotly.graph_objs import Scatter, Layout
-	polXlist, polYlist = get_polygon_XYlists(singlePolygon)
+	aXlist, aYlist = get_polygon_XYlists(singlePolygon)
+	bXlist, bYlist = get_guards_XYlists(guard)
 	plotly.offline.plot({
 	"data": [
-    Scatter(x=polXlist, y=polYlist, fill='tozeroy'),
-    ]
-	})
-
-
-def plotcheck(singlePolygon,guard):
-	from plotly.graph_objs import Scatter, Layout
-	polXlist, polYlist = get_polygon_XYlists(singlePolygon)
-	guardXlist, guardYlist = get_guards_XYlists(guard)
-	plotly.offline.plot({
-	"data": [
-    Scatter(x=polXlist, y=polYlist, fill='tozeroy'),
-    Scatter(x=guardXlist, y=guardYlist, mode = 'markers')
+    Scatter(x=aXlist, y=aYlist, fill='tozeroy'),
+    Scatter(x=bXlist, y=bYlist, mode = 'markers')
 	]
 	})
 
+<<<<<<< HEAD
 """
 guardsPolygonVertices =  readguardsfile()
 a =  guardsPolygonVertices[8]
@@ -203,4 +214,22 @@ def output_part1(guardsSolution):
 			count += 1
 
 #output_part1(guardsSolution)
+=======
+
+#guardsPolygonVertices =  readguardsfile()
+#a =  guardsPolygonVertices[7]
+#plot(a)
+
+checkPolygonVertices, checkGuardCoordinates = readcheckfile()
+a = checkPolygonVertices[2]
+b = checkGuardCoordinates[2]
+plot(a,b)
+"""
+print get_polygon_XYlists(b)
+print get_guards_XYlists(c)
+"""
+
+list = readguardsfile()
+print triangulate(list[18])
+>>>>>>> triangulate
 
