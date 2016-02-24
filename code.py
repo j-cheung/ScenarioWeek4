@@ -180,7 +180,6 @@ def plot(singlePolygon,guard):
 	]
 	})
 
-<<<<<<< HEAD
 """
 guardsPolygonVertices =  readguardsfile()
 a =  guardsPolygonVertices[8]
@@ -191,7 +190,7 @@ a = checkPolygonVertices[3]
 b = checkGuardCoordinates[3]
 print a
 print b
-plotcheck(a,b)
+#plotcheck(a,b)
 
 """
 guardsSolution = []
@@ -214,7 +213,6 @@ def output_part1(guardsSolution):
 			count += 1
 
 #output_part1(guardsSolution)
-=======
 
 #guardsPolygonVertices =  readguardsfile()
 #a =  guardsPolygonVertices[7]
@@ -231,5 +229,5 @@ print get_guards_XYlists(c)
 
 list = readguardsfile()
 print triangulate(list[18])
->>>>>>> triangulate
+triangulate
 

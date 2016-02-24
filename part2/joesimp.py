@@ -314,6 +314,6 @@ def runalgorithm(num):
 	visiblePolygon = vispol(z,v,n,s,t)
 	print visiblePolygon
 
-runalgorithm(2)
+runalgorithm(0)
 
 
