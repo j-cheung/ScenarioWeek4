@@ -65,7 +65,8 @@ def angularDisplacement(v,i,z): #v is a stack
 		else:
 			return angularDisplacement(v,i-1,z)
 
-def pheta()
+def pheta():
+	print "pheta"
 
 def turn(u,v,w):
 	x1 = v.x - u.x
@@ -134,7 +135,12 @@ def advance(z,v,n,s,t,i,upcase,ccw,w):
 
 def retard(z,v,n,s,t,i,upcase,ccw,w):
 	while upcase == 'retard':
-		#scan backwards s[t-1] s[t-2]....s[0] 
+		j = 0
+		for count in range(t-1,0): 
+			#scan backwards s[t-1] s[t-2]....s[0]
+			if (angularDisplacement(s[count]) < angularDisplacement(v[i+1]) and angularDisplacement(v[i+1]) <= angularDisplacement(s[count+1])) or (angularDisplacement(v[i+1]) <= angularDisplacement(s[count]) and angularDisplacement(s[count]) = angularDisplacement(s[count+1]) and intersects(v[i],v[i+1],s[count],s[count+1])):
+				j = count
+				break
 		if angularDisplacement(s[j]) < angularDisplacement(v[i+1]):
 			i = i+1
 			t = j+1
