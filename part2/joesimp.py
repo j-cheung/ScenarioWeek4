@@ -91,6 +91,7 @@ def intersection(v1,v2,w1,w2):
 	#w1,w2 : points of second vector
 	xv = v2.x - v1.x
 	yv = v2.y - v1.y
+
 	xw = w2.x - w1.x
 	yw = w2.y - w1.y
 	#v: (xv1,yv1) + (xv,yv)t
@@ -120,7 +121,7 @@ def intersects(v1,v2,w1,w2):
 def polar(r,angle):
 	x = r * math.cos(angle)
 	y = r * math.sin(angle)
-	return Point(0,x,y)
+	return Point(2*math.pi,x,y)
 
 def calcMag(x,y):
 	return math.sqrt(x*x + y*y)
@@ -204,7 +205,6 @@ def advance(z,v,n,s,t,i,upcase,ccw,w):
 		print i
 		print 't: ' + str(t)
 		if v[i+1].angularDisplacement <= 2*math.pi:
-
 			i = i+1
 			t = t+1
 			s[t] = v[i]
@@ -212,6 +212,7 @@ def advance(z,v,n,s,t,i,upcase,ccw,w):
 				upcase = 'finish'
 			elif v[i+1].angularDisplacement < v[i].angularDisplacement:
 				if turn(v[i-1], v[i], v[i+1]) == 'right':
+					print 'hi'
 					upcase = 'scan'
 					ccw = True
 					pheta = v[i].angularDisplacement
@@ -240,14 +241,19 @@ def retard(z,v,n,s,t,i,upcase,ccw,w):
 		for count in range(t-1,0, -1): 
 			#scan backwards s[t-1] s[t-2]....s[0]
 			if s[count].angularDisplacement < v[i+1].angularDisplacement and v[i+1].angularDisplacement <= s[count+1].angularDisplacement:
+				print 'count ' + str(count)
 				j = count
 				break
 			elif v[i+1].angularDisplacement <= s[count].angularDisplacement and s[count].angularDisplacement == s[count+1].angularDisplacement and intersects(v[i],v[i+1],s[count],s[count+1]):
+				print 'count ' + str(count)
 				j = count
 				break
 		if s[j].angularDisplacement < v[i+1].angularDisplacement:
 			i = i+1
 			t = j+1
+			print 's[j]: ' + str(s[j])
+			print 's[j+1]: ' + str(s[j+1])
+			print 'v[i]: ' + str(v[i])
 			s[t] = intersection(s[j],s[j+1],z,v[i])
 			t = t+1
 			s[t] = v[i]
@@ -287,13 +293,11 @@ def scan(z,v,n,s,t,i,upcase,ccw,w):
 		alpha2 = s[t].angularDisplacement
 		print 's[t]: ' + str(alpha2)
 		if ccw and alpha1 > alpha2 and s[t].angularDisplacement >= v[i].angularDisplacement:#angularDisplacement(v,i+1,z) > angularDisplacement(s,t,z):
-			print "hi"
 			if intersects(v[i],v[i+1],s[t],w):
 				s[t+1] = intersection(v[i],v[i+1],s[t],w)
 				t = t+1
 				upcase = 'advance'
 		elif not ccw:
-			print "bye"
 			if v[i+1].angularDisplacement <= s[t].angularDisplacement and s[t].angularDisplacement < v[i].angularDisplacement:
 				if intersects(v[i],v[i+1],s[t],w):
 					upcase = 'retard'
@@ -314,6 +318,7 @@ def runalgorithm(num):
 		count += 1
 	#print "v0 angular displacement" 
 	#print v[5].angularDisplacement
+	v.append(v[0])
 	print v
 	n = len(v)
 	#print "n: " + str(n)
