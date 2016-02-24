@@ -189,7 +189,7 @@ def vispol(z,v,n,s,t):
 		ccw = True
 		w = polar(99999999,0) #point with polar coordinates (infinity, @(v0))
 	while upcase != 'finish':
-		print s
+		#print s
 		if upcase == 'advance':
 			s,t,i,upcase,ccw, w = advance(z,v,n,s,t,i,upcase,ccw,w)
 		elif upcase == 'retard':
@@ -200,8 +200,11 @@ def vispol(z,v,n,s,t):
 
 def advance(z,v,n,s,t,i,upcase,ccw,w):
 	while upcase == 'advance':
-		#print 'advance'
+		print 'advance'
+		print i
+		print 't: ' + str(t)
 		if v[i+1].angularDisplacement <= 2*math.pi:
+
 			i = i+1
 			t = t+1
 			s[t] = v[i]
@@ -215,8 +218,8 @@ def advance(z,v,n,s,t,i,upcase,ccw,w):
 					while pheta >= 2*math.pi:
 						pheta -= 2*math.pi
 					w = polar(99999999, pheta) #point with polar coordinates (infinity, @(vi))
-					print "w"
-					print w
+					#print "w"
+					#print w
 				elif turn(v[i-1], v[i], v[i+1]) == 'left':
 					upcase = 'retard'
 		else:
@@ -226,11 +229,13 @@ def advance(z,v,n,s,t,i,upcase,ccw,w):
 			upcase = 'scan'
 			ccw = False
 			w = v[0]
+		#print 'end advance' + str(i) + ' upcase = ' + upcase
 	return s,t,i,upcase,ccw, w
 
 def retard(z,v,n,s,t,i,upcase,ccw,w):
 	while upcase == 'retard':
-		#print 'retard'
+		print 'retard'
+		print i
 		j = 0
 		for count in range(t-1,0, -1): 
 			#scan backwards s[t-1] s[t-2]....s[0]
@@ -274,14 +279,15 @@ def retard(z,v,n,s,t,i,upcase,ccw,w):
 
 def scan(z,v,n,s,t,i,upcase,ccw,w):
 	while upcase == 'scan':
-		#print 'scan'
+		print 'scan'
+		print i 
 		i = i+1
-		#print i 
-
+		print 't: ' + str(t)
 		alpha1 = v[i+1].angularDisplacement
 		alpha2 = s[t].angularDisplacement
+		print 's[t]: ' + str(alpha2)
 		if ccw and alpha1 > alpha2 and s[t].angularDisplacement >= v[i].angularDisplacement:#angularDisplacement(v,i+1,z) > angularDisplacement(s,t,z):
-
+			print "hi"
 			if intersects(v[i],v[i+1],s[t],w):
 				s[t+1] = intersection(v[i],v[i+1],s[t],w)
 				t = t+1
@@ -308,9 +314,11 @@ def runalgorithm(num):
 		count += 1
 	#print "v0 angular displacement" 
 	#print v[5].angularDisplacement
-	n = len(polygonPoints)
+	print v
+	n = len(v)
+	#print "n: " + str(n)
 	s = v
-	t = len(polygonPoints)
+	t = len(v)
 	visiblePolygon = vispol(z,v,n,s,t)
 	print visiblePolygon
 
