@@ -112,8 +112,8 @@ def intersects(v1,v2,w1,w2):
 
 
 def polar(r,angle):
-	x = r * cos(angle)
-	y = r * sin(angle)
+	x = r * math.cos(angle)
+	y = r * math.sin(angle)
 	return Point(0,x,y)
 
 def calcMag(x,y):
@@ -150,10 +150,12 @@ def turn(u,v,w):
 		return 'right'
 
 def angularDisplacement(v,i,z): #v is a stack
-	print "angularDisplacement"
+	#print "angularDisplacement"
+	print "i: " + str(i)
 	if i == 0:
 		return 0
 	else:
+		#print v[i]
 		if turn(z,v[i-1],v[i]) == 'left':
 			return angle(v[i-1],z,v[i]) + angularDisplacement(v,i-1,z)
 		elif turn(z,v[i-1],v[i]) == 'right':
@@ -172,7 +174,8 @@ def vispol(z,v,n,s,t):
 	s[0] = v[0]
 	i = 0
 	t = 0
-	ccw = True
+	ccw = None
+	w = None
 	if angularDisplacement(v,1,z) >= angularDisplacement(v,0,z):
 		upcase = 'advance'
 	else:
@@ -181,15 +184,16 @@ def vispol(z,v,n,s,t):
 		w = polar(99999999,0) #point with polar coordinates (infinity, @(v0))
 	while upcase != 'finish':
 		if upcase == 'advance':
-			ccw, w = advance(z,v,n,s,t,i,upcase,ccw,w)
+			s,t,i,upcase,ccw, w = advance(z,v,n,s,t,i,upcase,ccw,w)
 		elif upcase == 'retard':
-			ccw, w = retard(z,v,n,s,t,i,upcase,ccw,w)
+			s,t,i,upcase,ccw, w = retard(z,v,n,s,t,i,upcase,ccw,w)
 		elif upcase =='scan':
 			s,t,i,upcase = scan(z,v,n,s,t,i,upcase,ccw,w)
 	return s
 
 def advance(z,v,n,s,t,i,upcase,ccw,w):
 	while upcase == 'advance':
+		print 'advance'
 		if angularDisplacement(v,i+1,z) <= 2*math.pi:
 			i = i+1
 			t = t+1
@@ -213,10 +217,11 @@ def advance(z,v,n,s,t,i,upcase,ccw,w):
 			upcase = 'scan'
 			ccw = False
 			w = v[0]
-	return ccw, w
+	return s,t,i,upcase,ccw, w
 
 def retard(z,v,n,s,t,i,upcase,ccw,w):
 	while upcase == 'retard':
+		print 'retard'
 		j = 0
 		for count in range(t-1,0): 
 			#scan backwards s[t-1] s[t-2]....s[0]
@@ -256,28 +261,35 @@ def retard(z,v,n,s,t,i,upcase,ccw,w):
 				upcase = 'scan'
 				t = j
 				ccw = True
-	return ccw, w
+	return s,t,i,upcase,ccw, w
 
 def scan(z,v,n,s,t,i,upcase,ccw,w):
 	while upcase == 'scan':
+		print 'scan'
 		i = i+1
-		if ccw and angularDisplacement(v,i+1,z) > angularDisplacement(s,t,z) and angularDisplacement(s,t,z) >= angularDisplacement(v,i,z):
-			if intersects(v[i],v[i+1],s[t],w):
-				s[t+1] = intersection(v[i],v[i+1],s[t],w)
-				t = t+1
-				upcase = 'advance'
-		elif not ccw and angularDisplacement(v,i+1,z) <= angularDisplacement(s,t,z) and angularDisplacement(s,t,z) < angularDisplacement(v,i,z):
-			if intersects(v[i],v[i+1],s[t],w):
-				upcase = 'retard'
+		print i 
+		alpha1 = angularDisplacement(v,i+1,z)
+		alpha2 = angularDisplacement(s,t,z)
+		if ccw and alpha1 > alpha2:#angularDisplacement(v,i+1,z) > angularDisplacement(s,t,z):
+			if angularDisplacement(s,t,z) >= angularDisplacement(v,i,z):
+				if intersects(v[i],v[i+1],s[t],w):
+					s[t+1] = intersection(v[i],v[i+1],s[t],w)
+					t = t+1
+					upcase = 'advance'
+		elif not ccw:
+			if angularDisplacement(v,i+1,z) <= angularDisplacement(s,t,z) and angularDisplacement(s,t,z) < angularDisplacement(v,i,z):
+				if intersects(v[i],v[i+1],s[t],w):
+					upcase = 'retard'
 	return s,t,i,upcase
 
-print turn(p1,p2,p3)
-print angle(p1,p2,p3)
+#print turn(p1,p2,p3)
+#print angle(p1,p2,p3)
 
 def runalgorithm(num):
 	polygonPoints, guardPoints = polyToPoint(num)
 	z = guardPoints[0]
 	v = polygonPoints
+	print v
 	n = len(polygonPoints)
 	s = polygonPoints
 	t = len(polygonPoints)
