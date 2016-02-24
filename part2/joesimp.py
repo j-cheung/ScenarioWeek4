@@ -151,15 +151,15 @@ def turn(u,v,w):
 
 def angularDisplacement(v,i,z): #v is a stack
 	#print "angularDisplacement"
-	print "i: " + str(i)
+	#print "i: " + str(i)
 	if i == 0:
 		return 0
 	else:
 		#print v[i]
 		if turn(z,v[i-1],v[i]) == 'left':
-			return angle(v[i-1],z,v[i]) + angularDisplacement(v,i-1,z)
+			return angularDisplacement(v,i-1,z) + angle(v[i-1],z,v[i])
 		elif turn(z,v[i-1],v[i]) == 'right':
-			return angle(v[i-1],z,v[i]) - angularDisplacement(v,i-1,z)
+			return angularDisplacement(v,i-1,z) - angle(v[i-1],z,v[i]) 
 		else:
 			return angularDisplacement(v,i-1,z)
 
@@ -176,13 +176,14 @@ def vispol(z,v,n,s,t):
 	t = 0
 	ccw = None
 	w = None
-	if angularDisplacement(v,1,z) >= angularDisplacement(v,0,z):
+	if v[1].angularDisplacement >= v[0].angularDisplacement:
 		upcase = 'advance'
 	else:
 		upcase = 'scan'
 		ccw = True
 		w = polar(99999999,0) #point with polar coordinates (infinity, @(v0))
 	while upcase != 'finish':
+		print s
 		if upcase == 'advance':
 			s,t,i,upcase,ccw, w = advance(z,v,n,s,t,i,upcase,ccw,w)
 		elif upcase == 'retard':
@@ -193,25 +194,27 @@ def vispol(z,v,n,s,t):
 
 def advance(z,v,n,s,t,i,upcase,ccw,w):
 	while upcase == 'advance':
-		print 'advance'
-		if angularDisplacement(v,i+1,z) <= 2*math.pi:
+		#print 'advance'
+		if v[i+1].angularDisplacement <= 2*math.pi:
 			i = i+1
 			t = t+1
 			s[t] = v[i]
 			if i == n:
 				upcase = 'finish'
-			elif angularDisplacement(v,i+1,z) < angularDisplacement(v,i,z):
+			elif v[i+1].angularDisplacement < v[i].angularDisplacement:
 				if turn(v[i-1], v[i], v[i+1]) == 'right':
 					upcase = 'scan'
 					ccw = True
-					pheta = angularDisplacement(v,i,z)
+					pheta = v[i].angularDisplacement
 					while pheta >= 2*math.pi:
 						pheta -= 2*math.pi
 					w = polar(99999999, pheta) #point with polar coordinates (infinity, @(vi))
+					print "w"
+					print w
 				elif turn(v[i-1], v[i], v[i+1]) == 'left':
 					upcase = 'retard'
 		else:
-			if angularDisplacement(s,t,z) < 2*math.pi:
+			if s[t].angularDisplacement < 2*math.pi:
 				t = t+1
 				s[t] = intersection(v[i],v[i+1],z,v[0])
 			upcase = 'scan'
@@ -221,17 +224,17 @@ def advance(z,v,n,s,t,i,upcase,ccw,w):
 
 def retard(z,v,n,s,t,i,upcase,ccw,w):
 	while upcase == 'retard':
-		print 'retard'
+		#print 'retard'
 		j = 0
-		for count in range(t-1,0): 
+		for count in range(t-1,0, -1): 
 			#scan backwards s[t-1] s[t-2]....s[0]
-			if angularDisplacement(s,count,z) < angularDisplacement(v,i+1,z) and angularDisplacement(v,i+1,z) <= angularDisplacement(s,count+1,z):
+			if s[count].angularDisplacement < v[i+1].angularDisplacement and v[i+1].angularDisplacement <= s[count+1].angularDisplacement:
 				j = count
 				break
-			elif angularDisplacement(v,i+1,z) <= angularDisplacement(s,count,z) and angularDisplacement(s,count,z) == angularDisplacement(s,count+1,z) and intersects(v[i],v[i+1],s[count],s[count+1]):
+			elif v[i+1].angularDisplacement <= s[count].angularDisplacement and s[count].angularDisplacement == s[count+1].angularDisplacement and intersects(v[i],v[i+1],s[count],s[count+1]):
 				j = count
 				break
-		if angularDisplacement(s,j,z) < angularDisplacement(v,i+1,z):
+		if s[j].angularDisplacement < v[i+1].angularDisplacement:
 			i = i+1
 			t = j+1
 			s[t] = intersection(s[j],s[j+1],z,v[i])
@@ -239,20 +242,19 @@ def retard(z,v,n,s,t,i,upcase,ccw,w):
 			s[t] = v[i]
 			if i == n:
 				upcase = 'finish'
-			elif angularDisplacement(v,i+1,z) >= angularDisplacement(v,i,z):
+			elif v[i+1].angularDisplacement >= v[i].angularDisplacement:
 				if turn(v[i-1], v[i], v[i+1]) == 'right':
 					upcase = 'advance'
-				elif turn(v[i-1], v[i], v[i+1]) == 'left':
+			elif v[i+1].angularDisplacement > v[i].angularDisplacement:
+				if turn(v[i-1], v[i], v[i+1]) == 'left':
 					upcase = 'scan'
 					ccw = False
 					w = v[i]
 					t = t-1
-				else:
-					t = t-1
 			else:
 				t = t-1
 		else:
-			if angularDisplacement(v,i+1,z) == angularDisplacement(s,j,z) and angularDisplacement(v,i+2,z) > angularDisplacement(v,i+1,z) and turn(v[i], v[i+1], v[i+2]) == 'right':
+			if v[i+1].angularDisplacement == s[j].angularDisplacement and v[i+2].angularDisplacement > v[i+1].angularDisplacement and turn(v[i], v[i+1], v[i+2]) == 'right':
 				upcase = 'advance'
 				i = i+1
 				t = j+1
@@ -261,23 +263,26 @@ def retard(z,v,n,s,t,i,upcase,ccw,w):
 				upcase = 'scan'
 				t = j
 				ccw = True
+				w = intersection(v[i],v[i+1],s[j],s[j+1])
 	return s,t,i,upcase,ccw, w
 
 def scan(z,v,n,s,t,i,upcase,ccw,w):
 	while upcase == 'scan':
-		print 'scan'
+		#print 'scan'
 		i = i+1
-		print i 
-		alpha1 = angularDisplacement(v,i+1,z)
-		alpha2 = angularDisplacement(s,t,z)
-		if ccw and alpha1 > alpha2:#angularDisplacement(v,i+1,z) > angularDisplacement(s,t,z):
-			if angularDisplacement(s,t,z) >= angularDisplacement(v,i,z):
-				if intersects(v[i],v[i+1],s[t],w):
-					s[t+1] = intersection(v[i],v[i+1],s[t],w)
-					t = t+1
-					upcase = 'advance'
+		#print i 
+
+		alpha1 = v[i+1].angularDisplacement
+		alpha2 = s[t].angularDisplacement
+		if ccw and alpha1 > alpha2 and s[t].angularDisplacement >= v[i].angularDisplacement:#angularDisplacement(v,i+1,z) > angularDisplacement(s,t,z):
+
+			if intersects(v[i],v[i+1],s[t],w):
+				s[t+1] = intersection(v[i],v[i+1],s[t],w)
+				t = t+1
+				upcase = 'advance'
 		elif not ccw:
-			if angularDisplacement(v,i+1,z) <= angularDisplacement(s,t,z) and angularDisplacement(s,t,z) < angularDisplacement(v,i,z):
+			print "bye"
+			if v[i+1].angularDisplacement <= s[t].angularDisplacement and s[t].angularDisplacement < v[i].angularDisplacement:
 				if intersects(v[i],v[i+1],s[t],w):
 					upcase = 'retard'
 	return s,t,i,upcase
@@ -289,9 +294,16 @@ def runalgorithm(num):
 	polygonPoints, guardPoints = polyToPoint(num)
 	z = guardPoints[0]
 	v = polygonPoints
-	print v
+	count = 0
+	for point in v:
+		alpha = angularDisplacement(v,count,z)
+		point.set_alpha(alpha)
+		v[count] = point
+		count += 1
+	#print "v0 angular displacement" 
+	#print v[5].angularDisplacement
 	n = len(polygonPoints)
-	s = polygonPoints
+	s = v
 	t = len(polygonPoints)
 	visiblePolygon = vispol(z,v,n,s,t)
 	print visiblePolygon
