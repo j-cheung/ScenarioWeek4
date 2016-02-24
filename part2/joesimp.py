@@ -102,6 +102,12 @@ def intersection(v1,v2,w1,w2):
 	return Point(0,intersectX,intersectY)
 
 def intersects(v1,v2,w1,w2):
+	xv = v2.x - v1.x
+	yv = v2.y - v1.y
+	xw = w2.x - w1.x
+	yw = w2.y - w1.y
+	if xv*yw == 0:
+		return False
 	intersectingP = intersection(v1,v2,w1,w2)
 	if (intersectingP.x <= v2.x and intersectingP.x >= v1.x) or (intersectingP.x <= v1.x and intersectingP.x >= v2.x):
 		if (intersectingP.y <= v2.y and intersectingP.y >= v1.y) or (intersectingP.y <= v1.y and intersectingP.x >= v2.y):
@@ -308,6 +314,6 @@ def runalgorithm(num):
 	visiblePolygon = vispol(z,v,n,s,t)
 	print visiblePolygon
 
-runalgorithm(0)
+runalgorithm(2)
 
 
