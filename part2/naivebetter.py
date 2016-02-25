@@ -3,6 +3,8 @@ import os, time, math
 from os.path import join, basename, exists, isdir
 from point import Point
 
+
+
 INPUT_FILE_DIR = "../input/"
 OUTPUT_FILE_DIR = "../output/"
 
@@ -84,6 +86,15 @@ def polyToPoint(num):
 def intersection(v1,v2,w1,w2):
 	#v1,v2 : points of first vector
 	#w1,w2 : points of second vector
+	
+	intersectX = ((v1.x * v2.y - v1.y * v2.x)*(w1.x - w2.x) - (v1.x - v2.x)*(w1.x * w2.y - w1.y * w2.x)) / ((v1.x - v2.x)*(w1.y - w2.y) - (v1.y - v2.y)*(w1.x - w2.x))
+	intersectY = ((v1.x * v2.y - v1.y * v2.x)*(w1.y - w2.y) - (v1.y - v2.y)*(w1.x * w2.y - w1.y * w2.x)) / ((v1.x - v2.x)*(w1.y - w2.y) - (v1.y - v2.y)*(w1.x - w2.x))
+
+	return Point(0,intersectX,intersectY)
+"""
+def intersection(v1,v2,w1,w2):
+	#v1,v2 : points of first vector
+	#w1,w2 : points of second vector
 	xv = v2.x - v1.x
 	yv = v2.y - v1.y
 
@@ -96,7 +107,7 @@ def intersection(v1,v2,w1,w2):
 	intersectY = v1.y + (t * yv)
 
 	return Point(0,intersectX,intersectY)
-
+"""
 def intersects(v1,v2,w1,w2):
 	xv = v2.x - v1.x
 	yv = v2.y - v1.y
@@ -129,6 +140,9 @@ def angle(target,initial,p_ref):
 		return 0
 	#print 'hi'
 	cos = dotproduct / (magA*magB)
+	if cos > 1 and cos <= 1.00000000001:
+		cos = 1
+	#print cos <= 1.0		
 	return math.acos(cos)
 
 def polar(r,angle,guard,p_ref):
@@ -141,37 +155,119 @@ def polar(r,angle,guard,p_ref):
 def naive_better(guard,s):
 	vispoly = []
 	s.append(s[0])
-	#for each edge:
-	for j in range(0,len(s)-1):
+	for j in range(0,len(s)-1): #each edge in polygon
 		edge = [s[j],s[j+1]]
 		for vertex in edge:
-			print 'vertex - ' + str(vertex)
 			r = distance(guard,vertex)
 			vispolPoint = vertex
-			#theta = angle(vertex,guard,s[0])
-			for i in range(0,len(s)-1):
+			print 'vertex - ' + str(vertex)
+			print 'guard - ' + str(guard)
+			theta = angle(vertex,guard,s[0])
+			print 'angle - ' + str(theta)
+			for i in range(0,len(s)-1): #each edge in polygon
+				#print 'guard - ' + str(guard)
 				if intersects(guard,vertex,s[i],s[i+1]):
+					#print 'guard - ' + str(guard)
+					#print 'vertex - ' + str(vertex)
+					#print 'edge - ' + str([s[i],s[i+1]])
 					#print 'hi'
 					intersecting = intersection(guard,vertex,s[i],s[i+1])
-					print 'intersecting - ' + str(intersecting)
+					#print 'intersecting - ' + str(intersecting)
 					if distance(guard,intersecting) < r:
-						print 'smaller distance - ' + str(distance(guard,intersecting))
+						#print 'smaller distance - ' + str(distance(guard,intersecting))
 						r = distance(guard,intersecting)
 						vispolPoint = intersecting
+				#print 'temp vispolPoint - ' + str(vispolPoint)
+
 			#vispolPoint = 
-			print vispolPoint
+			#print 'final vispolPoint - ' + str(vispolPoint)
 			vispoly.append(vispolPoint)
 	return vispoly
 		# for each edge in polygon, find if line from guard to point(vertex) intersects edge
 		# add intersection closest to guard to vispoly
 
+def get_polygon_XYlists(singlePolygon): #takes in one list of vertices for a selected polygon
+	listLength = len(singlePolygon)
+	Xlist = []
+	Ylist = []
+	"""
+	for vertice in singlePolygon:
+		coordinates = vertice.strip('()')
+		coordinates = coordinates.split(',')
+		x = coordinates[0]
+		x = float(x)
+		y = coordinates[1]
+		y = float(y)
+		Xlist.append(x)
+		Ylist.append(y)
+	firstVertice = singlePolygon[0]
+	coordinates = firstVertice.strip('()')
+	coordinates = coordinates.split(',')
+	x = coordinates[0]
+	x = float(x)
+	y = coordinates[1]
+	y = float(y)
+	Xlist.append(x)
+	Ylist.append(y)
+	"""
+	for vertice in singlePolygon:
+		x = vertice.x
+		y = vertice.y
+		Xlist.append(x)
+		Ylist.append(y)
+	firstVertex = singlePolygon[0]
+	firstVertex_x = firstVertex.x
+	firstVertex_y = firstVertex.y
+	Xlist.append(firstVertex_x)
+	Ylist.append(firstVertex_y)
+	return Xlist, Ylist
+
+def get_guards_XYlists(guardList): #takes in one list of vertices for a selected polygon
+	listLength = len(guardList)
+	Xlist = []
+	Ylist = []
+	"""
+	for vertice in singlePolygon:
+		coordinates = vertice.strip('()')
+		coordinates = coordinates.split(',')
+		x = coordinates[0]
+		x = float(x)
+		y = coordinates[1]
+		y = float(y)
+		Xlist.append(x)
+		Ylist.append(y)
+	"""
+	for vertice in guardList:
+		x = vertice.x
+		y = vertice.y
+		Xlist.append(x)
+		Ylist.append(y)
+	return Xlist, Ylist
+
+def plotcheck(initPolygon, visPolygon,guards):
+	import plotly
+	import plotly.plotly as py
+	import plotly.graph_objs as go
+	from plotly.graph_objs import Scatter, Layout
+	initpolXlist, initpolYlist = get_polygon_XYlists(initPolygon)
+	guardXlist, guardYlist = get_guards_XYlists(guards)
+	vispolXlist, vispolYlist = get_polygon_XYlists(visPolygon)
+	plotly.offline.plot({
+	"data": [
+    #Scatter(x=initpolXlist, y=initpolYlist, fill='tozeroy'),
+    Scatter(x=vispolXlist, y=vispolYlist, mode = 'markers'),
+    Scatter(x=guardXlist, y=guardYlist, mode = 'markers')
+	]
+	})
+
 def run_algorithm(num):
 	polygon,guards = polyToPoint(num)
-	print naive_better(guards[0],polygon)
+	vispoly =  naive_better(guards[1],polygon)
 	#print polygon
+	print vispoly
 	#print guards
-	#print 'distance - ' + str(distance(Point(0,2,0),Point(0,0,0)))
-
+	plotcheck(polygon,vispoly,guards)
+	
 
 run_algorithm(0)
 
