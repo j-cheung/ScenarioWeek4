@@ -333,31 +333,41 @@ def get_guards_XYlists(guardList): #takes in one list of vertices for a selected
 		Ylist.append(y)
 	return Xlist, Ylist
 
-def plotcheck(initPolygon, visPolygon,guards):
+def plotcheck(initPolygon,visPolygonList,guards):
 	import plotly
 	import plotly.plotly as py
 	import plotly.graph_objs as go
 	from plotly.graph_objs import Scatter, Layout
 	initpolXlist, initpolYlist = get_polygon_XYlists(initPolygon)
 	guardXlist, guardYlist = get_guards_XYlists(guards)
-	vispolXlist, vispolYlist = get_polygon_XYlists(visPolygon)
+	data = [Scatter(x=initpolXlist, y=initpolYlist, fill='tozeroy'),
+		Scatter(x=guardXlist, y=guardYlist, mode = 'markers')]
+	for visPolygon in visPolygonList:
+		vispolXlist, vispolYlist = get_polygon_XYlists(visPolygon)
+		trace = Scatter(x=vispolXlist, y=vispolYlist, mode = 'markers')
+		data.append(trace)
+	plotly.offline.plot(data)
+"""
 	plotly.offline.plot({
 	"data": [
-	Scatter(x=initpolXlist, y=initpolYlist, fill='tozeroy'),
-	Scatter(x=vispolXlist, y=vispolYlist, fill='tozeroy'),
-	Scatter(x=guardXlist, y=guardYlist, mode = 'markers')
+		Scatter(x=initpolXlist, y=initpolYlist, fill='tozeroy'),
+		Scatter(x=guardXlist, y=guardYlist, mode = 'markers')
 	]
 	})
+"""
+
 
 def run_algorithm(num):
 	polygon,guards = polyToPoint(num)
 	#polygon,guards = readcheckfile(num)
-
-	vispoly =  my_naive_better(guards[1],polygon)
+	allvispoly = []
+	for guard in guards:
+		vispoly =  my_naive_better(guard,polygon)
+		allvispoly.append(vispoly)
 	#print polygon
 	#print vispoly
 	#print guards
-	plotcheck(polygon,vispoly,guards)
+	plotcheck(polygon,allvispoly,guards)
 	#print polygon
 	#print point_in_poly(3,2.1,polygon)
 	
