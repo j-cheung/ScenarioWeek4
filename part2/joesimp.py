@@ -76,7 +76,7 @@ def polyToPoint(num):
 			point = Point(i, float(x), float(y))
 			i += 1
 			polygonPoints.append(point)
-		for pt in polygonArr:
+		for pt in guardsArr:
 			pt2 = pt.strip('()')
 			pt3 = pt2.replace(",", "")
 			x, y = pt3.split()
@@ -170,7 +170,7 @@ def angularDisplacement(v,i,z): #v is a stack
 		else:
 			return angularDisplacement(v,i-1,z)
 
-def pheta():
+def theta():
 	print "pheta"
 
 def vispol(z,v,n,s,t):
@@ -201,6 +201,7 @@ def vispol(z,v,n,s,t):
 
 def advance(z,v,n,s,t,i,upcase,ccw,w):
 	while upcase == 'advance':
+		print s
 		print 'advance'
 		print i
 		print 't: ' + str(t)
@@ -235,6 +236,7 @@ def advance(z,v,n,s,t,i,upcase,ccw,w):
 
 def retard(z,v,n,s,t,i,upcase,ccw,w):
 	while upcase == 'retard':
+		print s
 		print 'retard'
 		print i
 		j = 0
@@ -285,6 +287,7 @@ def retard(z,v,n,s,t,i,upcase,ccw,w):
 
 def scan(z,v,n,s,t,i,upcase,ccw,w):
 	while upcase == 'scan':
+		print s
 		print 'scan'
 		print i 
 		i = i+1
@@ -319,7 +322,7 @@ def runalgorithm(num):
 	#print "v0 angular displacement" 
 	#print v[5].angularDisplacement
 	v.append(v[0])
-	print v
+	#print v
 	n = len(v)
 	#print "n: " + str(n)
 	s = v
