@@ -340,21 +340,13 @@ def plotcheck(initPolygon,visPolygonList,guards):
 	from plotly.graph_objs import Scatter, Layout
 	initpolXlist, initpolYlist = get_polygon_XYlists(initPolygon)
 	guardXlist, guardYlist = get_guards_XYlists(guards)
-	data = [Scatter(x=initpolXlist, y=initpolYlist, fill='tozeroy'),
-		Scatter(x=guardXlist, y=guardYlist, mode = 'markers')]
+	data = [Scatter(x=initpolXlist, y=initpolYlist, fill='tozeroy'), Scatter(x=guardXlist, y=guardYlist, mode = 'markers')]
 	for visPolygon in visPolygonList:
 		vispolXlist, vispolYlist = get_polygon_XYlists(visPolygon)
-		trace = Scatter(x=vispolXlist, y=vispolYlist, mode = 'markers')
+		trace = Scatter(x=vispolXlist, y=vispolYlist, fill='tozerox')
 		data.append(trace)
 	plotly.offline.plot(data)
-"""
-	plotly.offline.plot({
-	"data": [
-		Scatter(x=initpolXlist, y=initpolYlist, fill='tozeroy'),
-		Scatter(x=guardXlist, y=guardYlist, mode = 'markers')
-	]
-	})
-"""
+
 
 
 def run_algorithm(num):
