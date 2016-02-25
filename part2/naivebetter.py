@@ -183,6 +183,27 @@ def naive_better(guard,s):
 		# for each edge in polygon, find if line from guard to point(vertex) intersects edge
 		# add intersection closest to guard to vispoly
 
+def point_in_poly(x,y,strlist):
+    xl, yl = get_polygon_XYlists(strlist)
+    xl.pop()
+    yl.pop()
+    poly = zip(xl, yl)
+    
+    n = len(poly)
+    inside = False
+    p1x ,p1y = poly[0]
+    for i in range(n+1):
+        p2x,p2y = poly[i % n]
+        if y > min(p1y,p2y):
+            if y <= max(p1y,p2y):
+                if x <= max(p1x,p2x):
+                    if p1y != p2y:
+                        xints = (y-p1y)*(p2x-p1x)/(p2y-p1y)+p1x
+                    if p1x == p2x or x <= xints:
+                        inside = not inside
+        p1x,p1y = p2x,p2y
+    return inside
+
 def my_naive_better(select_guard,s):
 	vispoly = []
 	s.append(s[0])
@@ -203,7 +224,12 @@ def my_naive_better(select_guard,s):
 					print intersecting"""
 					if distance(intersecting,select_guard) < distance(vispolPoint,select_guard):
 						vispolPoint = intersecting
-		#if statement
+		midpoint_x = (select_guard.x + vispolPoint.x) / 2
+		midpoint_y = (select_guard.y + vispolPoint.y) / 2
+		"""if not point_in_poly(midpoint_x,midpoint_y,s):
+			vispolPoint = select_guard
+		#if line is outside polygon, vispolPoint is guard.
+		"""
 		vispoly.append(vispolPoint)
 	return vispoly
 
@@ -262,7 +288,7 @@ def run_algorithm(num):
 	#print intersects(guards[0],polygon[4],polygon[2],polygon[3])
 	#print collinear(guards[0],polygon[0],polygon[6],polygon[7])
 
-run_algorithm(6)
+run_algorithm(7)
 
 
 
