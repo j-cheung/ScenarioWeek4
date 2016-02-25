@@ -109,16 +109,13 @@ def intersects(v1,v2,w1,w2):
 	if parallel(v1,v2,w1,w2):
 		return False
 	intersectingP = intersection(v1,v2,w1,w2)
-	print v1,v2,w1,w2
-	print intersectingP
 	if (intersectingP.x <= v2.x and intersectingP.x >= v1.x) or (intersectingP.x <= v1.x and intersectingP.x >= v2.x):
-		if (intersectingP.y <= v2.y and intersectingP.y >= v1.y) or (intersectingP.y <= v1.y and intersectingP.x >= v2.y):
+		if (intersectingP.y <= v2.y and intersectingP.y >= v1.y) or (intersectingP.y <= v1.y and intersectingP.y >= v2.y):
 			if (intersectingP.x <= w2.x and intersectingP.x >= w1.x) or (intersectingP.x <= w1.x and intersectingP.x >= w2.x):
-				if (intersectingP.y <= w2.y and intersectingP.y >= w1.y) or (intersectingP.y <= w1.y and intersectingP.x >= w2.y):
+				if (intersectingP.y <= w2.y and intersectingP.y >= w1.y) or (intersectingP.y <= w1.y and intersectingP.y >= w2.y):
+					print 'intersecting y - ' + str(intersectingP.y)
 					return True
 	return False
-
-
 
 def polar(r,angle):
 	x = r * math.cos(angle)
