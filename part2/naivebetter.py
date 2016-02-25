@@ -91,23 +91,7 @@ def intersection(v1,v2,w1,w2):
 	intersectY = ((v1.x * v2.y - v1.y * v2.x)*(w1.y - w2.y) - (v1.y - v2.y)*(w1.x * w2.y - w1.y * w2.x)) / ((v1.x - v2.x)*(w1.y - w2.y) - (v1.y - v2.y)*(w1.x - w2.x))
 
 	return Point(0,intersectX,intersectY)
-"""
-def intersection(v1,v2,w1,w2):
-	#v1,v2 : points of first vector
-	#w1,w2 : points of second vector
-	xv = v2.x - v1.x
-	yv = v2.y - v1.y
 
-	xw = w2.x - w1.x
-	yw = w2.y - w1.y
-	#v: (xv1,yv1) + (xv,yv)t
-	#w: (xw1,yw1) + (xw,yw)t
-	t = -(yw * (v1.x - xw) / (xv*yw))
-	intersectX = v1.x + (t * xv)
-	intersectY = v1.y + (t * yv)
-
-	return Point(0,intersectX,intersectY)
-"""
 def parallel(v1,v2,w1,w2):
 	xv = v2.x - v1.x
 	yv = v2.y - v1.y
@@ -117,13 +101,7 @@ def parallel(v1,v2,w1,w2):
 		return True
 
 def intersects(v1,v2,w1,w2):
-	"""xv = v2.x - v1.x
-	yv = v2.y - v1.y
-	xw = w2.x - w1.x
-	yw = w2.y - w1.y
-	if (xv*yw - xw*yv)== 0: #parallel
-		return False
-		"""
+	
 	if parallel(v1,v2,w1,w2):
 		return False
 	intersectingP = intersection(v1,v2,w1,w2)
@@ -137,17 +115,7 @@ def intersects(v1,v2,w1,w2):
 	return False
 
 def collinear(a,b,c,d):
-	"""
-	abx = b.x - a.x
-	aby = b.y - a.y
-	cdx = d.x - c.x
-	cdy = d.y - c.y
-	acx = c.x - a.x
-	acy = c.y - a.y
-
-	if abx*cdy == 0 and abx*acy == 0:
-		return True
-	"""
+	
 	if parallel(a,b,c,d) and parallel(a,b,a,c):
 		return True
 	return False
@@ -294,7 +262,7 @@ def run_algorithm(num):
 	#print intersects(guards[0],polygon[4],polygon[2],polygon[3])
 	#print collinear(guards[0],polygon[0],polygon[6],polygon[7])
 
-run_algorithm(0)
+run_algorithm(6)
 
 
 

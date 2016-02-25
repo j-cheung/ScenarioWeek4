@@ -86,36 +86,38 @@ def polyToPoint(num):
 		#print points
 		return polygonPoints,guardPoints
 
+
 def intersection(v1,v2,w1,w2):
 	#v1,v2 : points of first vector
 	#w1,w2 : points of second vector
-	xv = v2.x - v1.x
-	yv = v2.y - v1.y
-
-	xw = w2.x - w1.x
-	yw = w2.y - w1.y
-	#v: (xv1,yv1) + (xv,yv)t
-	#w: (xw1,yw1) + (xw,yw)t
-	t = -(yw * (v1.x - xw) / (xv*yw))
-	intersectX = v1.x + (t * xv)
-	intersectY = v1.y + (t * yv)
+	
+	intersectX = ((v1.x * v2.y - v1.y * v2.x)*(w1.x - w2.x) - (v1.x - v2.x)*(w1.x * w2.y - w1.y * w2.x)) / ((v1.x - v2.x)*(w1.y - w2.y) - (v1.y - v2.y)*(w1.x - w2.x))
+	intersectY = ((v1.x * v2.y - v1.y * v2.x)*(w1.y - w2.y) - (v1.y - v2.y)*(w1.x * w2.y - w1.y * w2.x)) / ((v1.x - v2.x)*(w1.y - w2.y) - (v1.y - v2.y)*(w1.x - w2.x))
 
 	return Point(0,intersectX,intersectY)
 
-def intersects(v1,v2,w1,w2):
+def parallel(v1,v2,w1,w2):
 	xv = v2.x - v1.x
 	yv = v2.y - v1.y
 	xw = w2.x - w1.x
 	yw = w2.y - w1.y
-	if xv*yw == 0:
+	if (xv*yw - xw*yv)== 0: #parallel
+		return True
+
+def intersects(v1,v2,w1,w2):
+	
+	if parallel(v1,v2,w1,w2):
 		return False
 	intersectingP = intersection(v1,v2,w1,w2)
+	print v1,v2,w1,w2
+	print intersectingP
 	if (intersectingP.x <= v2.x and intersectingP.x >= v1.x) or (intersectingP.x <= v1.x and intersectingP.x >= v2.x):
 		if (intersectingP.y <= v2.y and intersectingP.y >= v1.y) or (intersectingP.y <= v1.y and intersectingP.x >= v2.y):
 			if (intersectingP.x <= w2.x and intersectingP.x >= w1.x) or (intersectingP.x <= w1.x and intersectingP.x >= w2.x):
 				if (intersectingP.y <= w2.y and intersectingP.y >= w1.y) or (intersectingP.y <= w1.y and intersectingP.x >= w2.y):
 					return True
 	return False
+
 
 
 def polar(r,angle):
