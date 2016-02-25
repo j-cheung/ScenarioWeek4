@@ -108,14 +108,27 @@ def intersection(v1,v2,w1,w2):
 
 	return Point(0,intersectX,intersectY)
 """
-def intersects(v1,v2,w1,w2):
+def parallel(v1,v2,w1,w2):
 	xv = v2.x - v1.x
 	yv = v2.y - v1.y
 	xw = w2.x - w1.x
 	yw = w2.y - w1.y
-	if xv*yw == 0: #parallel
+	if (xv*yw - xw*yv)== 0: #parallel
+		return True
+
+def intersects(v1,v2,w1,w2):
+	"""xv = v2.x - v1.x
+	yv = v2.y - v1.y
+	xw = w2.x - w1.x
+	yw = w2.y - w1.y
+	if (xv*yw - xw*yv)== 0: #parallel
+		return False
+		"""
+	if parallel(v1,v2,w1,w2):
 		return False
 	intersectingP = intersection(v1,v2,w1,w2)
+	print v1,v2,w1,w2
+	print intersectingP
 	if (intersectingP.x <= v2.x and intersectingP.x >= v1.x) or (intersectingP.x <= v1.x and intersectingP.x >= v2.x):
 		if (intersectingP.y <= v2.y and intersectingP.y >= v1.y) or (intersectingP.y <= v1.y and intersectingP.x >= v2.y):
 			if (intersectingP.x <= w2.x and intersectingP.x >= w1.x) or (intersectingP.x <= w1.x and intersectingP.x >= w2.x):
@@ -124,6 +137,7 @@ def intersects(v1,v2,w1,w2):
 	return False
 
 def collinear(a,b,c,d):
+	"""
 	abx = b.x - a.x
 	aby = b.y - a.y
 	cdx = d.x - c.x
@@ -132,6 +146,9 @@ def collinear(a,b,c,d):
 	acy = c.y - a.y
 
 	if abx*cdy == 0 and abx*acy == 0:
+		return True
+	"""
+	if parallel(a,b,c,d) and parallel(a,b,a,c):
 		return True
 	return False
 
@@ -261,7 +278,7 @@ def plotcheck(initPolygon, visPolygon,guards):
 	vispolXlist, vispolYlist = get_polygon_XYlists(visPolygon)
 	plotly.offline.plot({
 	"data": [
-    #Scatter(x=initpolXlist, y=initpolYlist, fill='tozeroy'),
+    Scatter(x=initpolXlist, y=initpolYlist, fill='tozeroy'),
     Scatter(x=vispolXlist, y=vispolYlist, mode = 'markers'),
     Scatter(x=guardXlist, y=guardYlist, mode = 'markers')
 	]
@@ -269,12 +286,13 @@ def plotcheck(initPolygon, visPolygon,guards):
 
 def run_algorithm(num):
 	polygon,guards = polyToPoint(num)
-	#vispoly =  my_naive_better(guards[0],polygon)
+	vispoly =  my_naive_better(guards[0],polygon)
 	#print polygon
 	#print vispoly
 	#print guards
-	#plotcheck(polygon,vispoly,guards)
-	print intersects(guards[0],polygon[4],polygon[2],polygon[3])
+	plotcheck(polygon,vispoly,guards)
+	#print intersects(guards[0],polygon[4],polygon[2],polygon[3])
+	#print collinear(guards[0],polygon[0],polygon[6],polygon[7])
 
 run_algorithm(0)
 
