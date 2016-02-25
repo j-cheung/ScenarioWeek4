@@ -182,7 +182,7 @@ def naive_better(guard,s):
 		# add intersection closest to guard to vispoly
 
 def point_in_poly(x,y,strlist):
-    xl, yl = get_polygon_XYlists_2(strlist)
+    xl, yl = get_polygon_XYlists(strlist)
     xl.pop()
     yl.pop()
     poly = zip(xl, yl)
@@ -202,22 +202,23 @@ def point_in_poly(x,y,strlist):
         p1x,p1y = p2x,p2y
     return inside
 
-def pointOnBorder(x, y, strlist):
-    xl, yl = get_polygon_XYlists_2(strlist)
+def distance2(x1,y1,x2,y2):
+    return math.sqrt((x1 - x2)**2 + (y1 - y2)**2)
+
+def is_between(x1,y1,x,y,x2,y2):
+    return distance2(x1,y1,x,y) + distance2(x,y,x2,y2) == distance2(x1,y1,x2,y2)
+
+def pointOnBorder1(x,y,strlist):
+    xl, yl = get_polygon_XYlists(strlist)
     xl.pop()
     yl.pop()
     poly = zip(xl, yl)
     n = len(poly)
     for i in range(n):
-        p1x, p1y = poly[i]
-        p2x, p2y = poly[(i + 1) % n]
-        v1x = p2x - p1x
-        v1y = p2y - p1y 
-        v2x = x - p1x
-        v2y = y - p1y #vector from p1 to the point in question
-        if(v1x * v2y - v1y * v2x == 0): #if vectors are parallel 
-            if(v1x * v1x + v1y * v1y >= v2x * v2x + v2y * v2y): #if v2 is shorter than v1
-                return True
+        x1,y1 = poly[i]
+        x2,y2 = poly[(i + 1) % n]
+        if is_between(x1,y1,x,y,x2,y2) == True:
+            return True
     return False
 
 def my_naive_better(select_guard,s):
@@ -230,25 +231,39 @@ def my_naive_better(select_guard,s):
 				vispolPoint = vertex
 			elif intersects(select_guard,vertex,s[i],s[i+1]):
 				intersecting = intersection(select_guard,vertex,s[i],s[i+1])
-				if intersecting.x == 0.0:
-					print select_guard,vertex,s[i],s[i+1]
-					print intersecting
-				if intersecting.x != select_guard.x or intersecting.y != select_guard.y:
-					if distance(intersecting,select_guard) < distance(vispolPoint,select_guard):
-						vispolPoint = intersecting
+				if not (intersecting.x == s[i].x and intersecting.y == s[i].y) or (intersecting.x == s[i+1].x and intersecting.y == s[i+1].y):
+					if intersecting.x != select_guard.x or intersecting.y != select_guard.y:
+						if distance(intersecting,select_guard) < distance(vispolPoint,select_guard):
+							vispolPoint = intersecting
 		midpoint_x = (select_guard.x + vispolPoint.x) / 2
 		midpoint_y = (select_guard.y + vispolPoint.y) / 2
-		print select_guard,vertex 
-		print select_guard,vispolPoint
-		print 'midpoint: ' + str((midpoint_x,midpoint_y))
-		print point_in_poly(midpoint_x,midpoint_y,s)
-		print pointOnBorder(midpoint_x,midpoint_y,s)
-		if not point_in_poly(midpoint_x,midpoint_y,s) and not pointOnBorder(midpoint_x,midpoint_y,s):
+		if not point_in_poly(midpoint_x,midpoint_y,s) and not pointOnBorder1(midpoint_x,midpoint_y,s):
 			vispolPoint = select_guard
 		#if line is outside polygon, vispolPoint is guard.
 		
 		vispoly.append(vispolPoint)
-	return vispoly
+#extend
+	extendedvispoly = []
+	for vertex in vispoly:
+		vispolPoint = vertex
+		for i in range(0,len(s)-1):
+			if collinear(select_guard,vertex,s[i],s[i+1]) or parallel(select_guard,vertex,s[i],s[i+1]):
+				#vispolPoint = vertex
+				continue
+			#intersects(select_guard,vertex,s[i],s[i+1])
+			intersecting = intersection(select_guard,vertex,s[i],s[i+1])
+			#if not (intersecting.x == s[i].x and intersecting.y == s[i].y) or (intersecting.x == s[i+1].x and intersecting.y == s[i+1].y):
+			if intersecting.x != select_guard.x or intersecting.y != select_guard.y:
+				if distance(intersecting,select_guard) > distance(vispolPoint,select_guard):
+					midpoint_x = (intersecting.x + vispolPoint.x) / 2
+					midpoint_y = (intersecting.y + vispolPoint.y) / 2
+					if point_in_poly(midpoint_x,midpoint_y,s) or pointOnBorder1(midpoint_x,midpoint_y,s): #line from intersecting to current point is in polygon
+						vispolPoint = intersecting
+		extendedvispoly.append(vispolPoint)
+		#print vispolPoint
+
+	
+	return extendedvispoly
 
 def get_polygon_XYlists_2(singlePolygon): #takes in one list of vertices for a selected polygon
     listLength = len(singlePolygon)
@@ -273,7 +288,6 @@ def get_polygon_XYlists_2(singlePolygon): #takes in one list of vertices for a s
     Xlist.append(x)
     Ylist.append(y)
     return Xlist, Ylist
-
 
 def get_polygon_XYlists(singlePolygon): #takes in one list of vertices for a selected polygon
 	listLength = len(singlePolygon)
@@ -322,18 +336,18 @@ def plotcheck(initPolygon, visPolygon,guards):
 
 def run_algorithm(num):
 	polygon,guards = polyToPoint(num)
-	polygon,guards = readcheckfile(num)
+	#polygon,guards = readcheckfile(num)
 
-	#vispoly =  my_naive_better(guards[0],polygon)
+	vispoly =  my_naive_better(guards[0],polygon)
 	#print polygon
 	#print vispoly
 	#print guards
-	#plotcheck(polygon,vispoly,guards)
+	plotcheck(polygon,vispoly,guards)
 	#print polygon
-	print point_in_poly(3,2.1,polygon)
+	#print point_in_poly(3,2.1,polygon)
 	
 
-run_algorithm(0)
+run_algorithm(6)
 
 
 
