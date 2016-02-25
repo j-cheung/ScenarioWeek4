@@ -243,27 +243,28 @@ def my_naive_better(select_guard,s):
 		
 		vispoly.append(vispolPoint)
 #extend
-	extendedvispoly = []
+	extendedvispol = []
+	for vertex in vispoly:
+		extendedvispol.append(vertex)
 	for vertex in vispoly:
 		vispolPoint = vertex
 		for i in range(0,len(s)-1):
 			if collinear(select_guard,vertex,s[i],s[i+1]) or parallel(select_guard,vertex,s[i],s[i+1]):
 				#vispolPoint = vertex
-				continue
-			#intersects(select_guard,vertex,s[i],s[i+1])
+				break
 			intersecting = intersection(select_guard,vertex,s[i],s[i+1])
 			#if not (intersecting.x == s[i].x and intersecting.y == s[i].y) or (intersecting.x == s[i+1].x and intersecting.y == s[i+1].y):
 			if intersecting.x != select_guard.x or intersecting.y != select_guard.y:
 				if distance(intersecting,select_guard) > distance(vispolPoint,select_guard):
 					midpoint_x = (intersecting.x + vispolPoint.x) / 2
 					midpoint_y = (intersecting.y + vispolPoint.y) / 2
-					if point_in_poly(midpoint_x,midpoint_y,s) or pointOnBorder1(midpoint_x,midpoint_y,s): #line from intersecting to current point is in polygon
-						vispolPoint = intersecting
-		extendedvispoly.append(vispolPoint)
-		#print vispolPoint
+					if pointOnBorder1(intersecting.x,intersecting.y,s):
+						if point_in_poly(midpoint_x,midpoint_y,s) or pointOnBorder1(midpoint_x,midpoint_y,s): #line intersecting to current point is in polygon
+							
+							vispolPoint = intersecting
+		extendedvispol.append(vispolPoint)
 
-	
-	return extendedvispoly
+	return extendedvispol
 
 def get_polygon_XYlists_2(singlePolygon): #takes in one list of vertices for a selected polygon
     listLength = len(singlePolygon)
@@ -329,7 +330,7 @@ def plotcheck(initPolygon, visPolygon,guards):
 	plotly.offline.plot({
 	"data": [
     Scatter(x=initpolXlist, y=initpolYlist, fill='tozeroy'),
-    Scatter(x=vispolXlist, y=vispolYlist, fill='tozeroy'),
+    Scatter(x=vispolXlist, y=vispolYlist, mode = 'markers'),
     Scatter(x=guardXlist, y=guardYlist, mode = 'markers')
 	]
 	})
