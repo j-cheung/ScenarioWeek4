@@ -172,10 +172,10 @@ def plotcheck(singlePolygon,guard):
     ]
     })
 
-def pointOnBorder(x, y, strlist):
+def pointOnBorder(x,y,strlist):
     xl, yl = get_polygon_XYlists(strlist)
-    xl.pop()
-    yl.pop()
+    #xl.pop()
+    #yl.pop()
     poly = zip(xl, yl)
     n = len(poly)
     for i in range(n):
@@ -189,6 +189,28 @@ def pointOnBorder(x, y, strlist):
             if(v1x * v1x + v1y * v1y >= v2x * v2x + v2y * v2y): #if v2 is shorter than v1
                 return True
     return False
+
+def distance(x1,y1,x2,y2):
+    return math.sqrt((x1 - x2)**2 + (y1 - y2)**2)
+
+def is_between(x1,y1,x,y,x2,y2):
+    return distance(x1,y1,x,y) + distance(x,y,x2,y2) == distance(x1,y1,x2,y2)
+
+def pointOnBorder1(x,y,strlist):
+    xl, yl = get_polygon_XYlists(strlist)
+    xl.pop()
+    yl.pop()
+    poly = zip(xl, yl)
+    n = len(poly)
+    for i in range(n):
+        x1,y1 = poly[i]
+        x2,y2 = poly[(i + 1) % n]
+        if is_between(x1,y1,x,y,x2,y2) == True:
+            return True
+    return False
+
+
+
 
 def point_in_poly(x,y,strlist):
     xl, yl = get_polygon_XYlists(strlist)
@@ -262,7 +284,42 @@ def intersection(v1,v2,w1,w2):
 
     return Point(0,intersectX,intersectY)
 
-def cangofuther()
+def cangofuther(xg,yg,xv,yv,vert):
+    x = 0
+    y = 0
+
+    if (xg == xv and yg == yv):
+        return False
+    elif xg == xv: #Vertical
+        
+        if yg > yv:
+            y = yv - 0.1
+        else:
+            y = yv + 0.1
+        if ((point_in_poly(xg,y,vert) == False and pointOnBorder(xg,y,vert) == False)):
+            return False
+    elif yg == yv: #Hori
+        if xg > xv:
+            x = xv - 0.1
+        else:
+            x = xv + 0.1
+        if ((point_in_poly(x,yg,vert) == False and pointOnBorder(x,yg,vert) == False)):
+            return False
+    else:
+        m = twoptgradient(xg,xv,yg,yv)
+        if ((m < 0 and yg < yv) or (m > 0 and yg > yv)):
+            x = xv - 0.1 
+            y = (m*(x-xg))+yg
+        elif((m < 0 and yg > yv) or (m > 0 and yg < yv)):
+            x = xv + 0.1 
+            y = (m*(x-xg))+yg
+        print x ,y
+        if ((point_in_poly(x,y,vert) == False and pointOnBorder(x,y,vert) == False)):
+            return False
+    return True
+
+
+
     
 
 def visibiltyofguards(vert,guards):
@@ -280,6 +337,11 @@ def visibiltyofguards(vert,guards):
             a = liesinpoly(xg[j],xv[i],yg[j],yv[i],vert)
             if a == True:
                 print 'Line betwwen G(%.1f, %.1f) & P(%.1f, %.1f) lies in the poly' % (xg[j],yg[j],xv[i],yv[i])
+                b = cangofuther(xg[j],yg[j],xv[i],yv[i],vert)
+                if b == False:
+                    print 'No'
+                else:
+                    print 'Yes'
 
 #4: (1, 2), (1, -3), (4, -3), (4, -1), (3, -1), (3, -2), (2, -2), (2, 1), (7, 1), (7, 3), (6, 3), (6, 2); (7, 1), (1, 2), (4, -1)
 
@@ -290,12 +352,13 @@ def visibiltyofguards(vert,guards):
 #plotguard(a)
 
 checkPolygonVertices, checkGuardCoordinates = readcheckfile()
-num = 4
+num = 0
 a = checkPolygonVertices[num]
 b = checkGuardCoordinates[num]
 c = findginv(a,b)
+print a
 print 'InPoly'
-d = pointOnBorder(2.333,1,a)
+d = pointOnBorder1(3,2,a)
 print d
 visibiltyofguards(a,b)
 #plotcheck(a,b)
