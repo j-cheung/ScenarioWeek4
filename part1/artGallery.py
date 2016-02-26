@@ -33,12 +33,12 @@ class ArtGallery(object):
 
 	@staticmethod
 	def readguardsfile(num):
-		inputFileName = "guards"
+		inputFileName = "guards2"
 		infilename = os.path.join(INPUT_FILE_DIR, inputFileName + '.pol')
 		outfilename = os.path.join(INPUT_FILE_DIR, inputFileName + '.sol')
 		with open(infilename, 'r') as f:
 			polygons = []
-			for i in range(0,30):
+			for i in range(0,1):
 				line = f.readline()
 				line = line.rstrip()
 				while not line.startswith(':'):
@@ -129,6 +129,35 @@ class ArtGallery(object):
 			# version control due to refresh of the painter object
 			self.Version += 1
 
+def get_polygon_XYlists(singlePolygon): #takes in one list of vertices for a selected polygon
+	listLength = len(singlePolygon)
+	Xlist = []
+	Ylist = []
+	
+	for vertice in singlePolygon:
+		x = vertice.x
+		y = vertice.y
+		Xlist.append(x)
+		Ylist.append(y)
+	firstVertex = singlePolygon[0]
+	firstVertex_x = firstVertex.x
+	firstVertex_y = firstVertex.y
+	Xlist.append(firstVertex_x)
+	Ylist.append(firstVertex_y)
+	return Xlist, Ylist
+
+def get_guards_XYlists(guardList): #takes in one list of vertices for a selected polygon
+	listLength = len(guardList)
+	Xlist = []
+	Ylist = []
+	
+	for vertice in guardList:
+		x = vertice.x
+		y = vertice.y
+		Xlist.append(x)
+		Ylist.append(y)
+	return Xlist, Ylist
+
 def output_part1(guardsSolution):
 	inputFileName = "guards"
 	outfilename = os.path.join(OUTPUT_FILE_DIR, inputFileName + '.sol')
@@ -146,26 +175,44 @@ def output_part1(guardsSolution):
 			f.write('\n')
 			count += 1
 
+def plotcheck(initPolygon,guards):
+	import plotly
+	import plotly.plotly as py
+	import plotly.graph_objs as go
+	from plotly.graph_objs import Scatter, Layout
+	initpolXlist, initpolYlist = get_polygon_XYlists(initPolygon)
+	guardXlist, guardYlist = get_guards_XYlists(guards)
+	data = [Scatter(x=initpolXlist, y=initpolYlist, fill='tozeroy'), Scatter(x=guardXlist, y=guardYlist, mode = 'markers')]
+	
+	plotly.offline.plot(data)
+
 if __name__ == '__main__':
 		#tmp = ArtGallery.load("input/guards.pol")
-		solution = []        
-		for count in range(0,30):
+		outputsolution = []    
+		plotsolution = []    
+		for count in range(0,1):
 			tmp = ArtGallery.polyToPoint(count)
 			g = ArtGallery(tmp.pop(0))
 			for p in tmp:
 				g.include(p)
 			onesolution = []
+			oneplotsolution = []
 			i=0
 			for p in g.get_points():
 				if g.is_guard(p):
 					#print p, " GUARD!"
 					onesolution.append((ArtGallery.readguardsfile(count))[i])
+					oneplotsolution.append(p)
 				i += 1
 				#else:
 					#print p
 			#print count
-			print str(count) + " " + str(len(onesolution))
-			solution.append(onesolution)
-		print solution
-		output_part1(solution)
+			#print str(count) + " " + str(len(onesolution))
+			outputsolution.append(onesolution)
+			plotsolution.append(oneplotsolution)
+		#print solution
+		init = ArtGallery.polyToPoint(count)
+
+		#output_part1(solution)
+		plotcheck(init,plotsolution[0])
 

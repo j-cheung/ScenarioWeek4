@@ -208,6 +208,7 @@ def distance2(x1,y1,x2,y2):
 def is_between(x1,y1,x,y,x2,y2):
 	return distance2(x1,y1,x,y) + distance2(x,y,x2,y2) == distance2(x1,y1,x2,y2)
 
+
 def pointOnBorder1(x,y,strlist):
 	xl, yl = get_polygon_XYlists(strlist)
 	xl.pop()
@@ -222,7 +223,8 @@ def pointOnBorder1(x,y,strlist):
 	return False
 
 def isort(A):
-	for i in range(1,len(A)-1):
+	
+	for i in range(1,len(A)):
 		x = A[i]
 		j = i - 1
 		while j >= 0 and A[j].angularDisplacement > x.angularDisplacement:
@@ -231,17 +233,37 @@ def isort(A):
 		A[j+1] = x
 	return A
 
+def perpendicular(v1,v2,w1,w2):
+	dotproduct = (v2.x - v1.x)*(w2.x - w1.x) + (v2.y - v1.y)*(w2.y - w1.y)
+	if dotproduct == 0:
+		return True
+	return False
+
 def my_naive_better(select_guard,s):
 	vispoly = []
 	s.append(s[0])
 	for vertex in s:
+		print 'vertex - ' + str(vertex)
 		vispolPoint = vertex
 		for i in range(0,len(s)-1):
 			if collinear(select_guard,vertex,s[i],s[i+1]):
+				print 'collinear'
 				vispolPoint = vertex
 			elif intersects(select_guard,vertex,s[i],s[i+1]):
 				intersecting = intersection(select_guard,vertex,s[i],s[i+1])
-				if not (intersecting.x == s[i].x and intersecting.y == s[i].y) or (intersecting.x == s[i+1].x and intersecting.y == s[i+1].y):
+
+				#if intersecting point is on end of edge and intersecting angle is 90 then ignore
+
+				if(intersecting.x == s[i].x and intersecting.y == s[i].y) or (intersecting.x == s[i+1].x and intersecting.y == s[i+1].y):
+					if intersecting.x == s[i].x and intersecting.y == s[i].y:
+						if perpendicular(select_guard,vertex,s[i],s[i+1]):
+							break
+						else:
+							if intersecting.x != select_guard.x or intersecting.y != select_guard.y:
+								if distance(intersecting,select_guard) < distance(vispolPoint,select_guard):
+									vispolPoint = intersecting
+
+				else:
 					if intersecting.x != select_guard.x or intersecting.y != select_guard.y:
 						if distance(intersecting,select_guard) < distance(vispolPoint,select_guard):
 							vispolPoint = intersecting
@@ -249,8 +271,19 @@ def my_naive_better(select_guard,s):
 		midpoint_y = (select_guard.y + vispolPoint.y) / 2
 		if not point_in_poly(midpoint_x,midpoint_y,s) and not pointOnBorder1(midpoint_x,midpoint_y,s):
 			vispolPoint = select_guard
-		#if line is outside polygon, vispolPoint is guard.
-		
+
+		'''quartile1_x = (select_guard.x + vispolPoint.x) / 4
+		quartile1_y = (select_guard.y + vispolPoint.y) / 4
+
+
+		quartile3_x = 3 * (select_guard.x + vispolPoint.x) / 4
+		quartile3_y = 3 * (select_guard.y + vispolPoint.y) / 4
+
+		if not point_in_poly(quartile1_x,quartile1_y,s) and not pointOnBorder1(quartile1_x,quartile1_y,s):
+			if not point_in_poly(quartile3_x,quartile3_y,s) and not pointOnBorder1(quartile3_x,quartile3_y,s):
+				vispolPoint = select_guard'''
+
+		print 'vispolPoint - ' + str(vispolPoint)
 		vispoly.append(vispolPoint)
 #extend
 	extendedvispol = []
@@ -270,15 +303,47 @@ def my_naive_better(select_guard,s):
 					if pointOnBorder1(intersecting.x,intersecting.y,s):
 						candidate_point = Point(distance(intersecting,select_guard),intersecting.x,intersecting.y)
 						candidates.append(candidate_point)
-		candidates = isort(candidates)
-		for candidate_point in candidates:
-			midpoint_x = (candidate_point.x + vispolPoint.x) / 2
-			midpoint_y = (candidate_point.y + vispolPoint.y) / 2
-			if point_in_poly(midpoint_x,midpoint_y,s) or pointOnBorder1(midpoint_x,midpoint_y,s): #line intersecting to current point is in polygon
-				vispolPoint = candidate_point
+		if(len(candidates)>0):
+			candidates = isort(candidates)
+			
+			for candidate_point in candidates:
+				midpoint_x = (candidate_point.x + vispolPoint.x) / 2
+				midpoint_y = (candidate_point.y + vispolPoint.y) / 2
+				if point_in_poly(midpoint_x,midpoint_y,s) or pointOnBorder1(midpoint_x,midpoint_y,s): #line from next closest to current closest point is in polygon
+					
+					vispolPoint = candidate_point
+				else:
+					break
 		extendedvispol.append(vispolPoint)
 
+	
+	extendedvispol =  sort_vispoly_angle(select_guard,extendedvispol)
 	return vispoly
+
+def sort_vispoly_angle(select_guard,vispoly):
+	#print vispoly
+	for vertex in vispoly:
+		angle = math.atan2(vertex.y - select_guard.y, vertex.x - select_guard.x)
+		if angle < 0 and angle >= (-math.pi):
+			angle += 2*math.pi
+		vertex.angularDisplacement = angle
+	vispoly = isort(vispoly)
+	distance_vispoly = []
+	"""for vertex in vispoly:
+					distance = distance(select_guard,vertex)
+					sameangle = []
+			
+					if distance == 0
+						break"""
+
+	return vispoly
+	#print vispoly
+
+def sort_vispoloy_edge(vispoly,s):
+	finalsorted = []
+	for i in range(0,len(s)-1):
+		temp = []
+
 
 def get_polygon_XYlists_2(singlePolygon): #takes in one list of vertices for a selected polygon
 	listLength = len(singlePolygon)
@@ -343,7 +408,7 @@ def plotcheck(initPolygon,visPolygonList,guards):
 	data = [Scatter(x=initpolXlist, y=initpolYlist, fill='tozeroy'), Scatter(x=guardXlist, y=guardYlist, mode = 'markers')]
 	for visPolygon in visPolygonList:
 		vispolXlist, vispolYlist = get_polygon_XYlists(visPolygon)
-		trace = Scatter(x=vispolXlist, y=vispolYlist, fill='tozerox')
+		trace = Scatter(x=vispolXlist, y=vispolYlist, mode = 'markers')
 		data.append(trace)
 	plotly.offline.plot(data)
 
@@ -353,9 +418,14 @@ def run_algorithm(num):
 	polygon,guards = polyToPoint(num)
 	#polygon,guards = readcheckfile(num)
 	allvispoly = []
+	guards = [guards[1]]
+	
 	for guard in guards:
 		vispoly =  my_naive_better(guard,polygon)
 		allvispoly.append(vispoly)
+	
+	#vispoly = my_naive_better(guards[1],polygon)
+	#allvispoly.append(vispoly)
 	#print polygon
 	#print vispoly
 	#print guards
